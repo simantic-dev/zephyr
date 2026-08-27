@@ -290,6 +290,13 @@ struct bt_le_ext_adv_cb {
 	 * @brief The Controller indicates that one or more synced devices have
 	 * responded to a periodic advertising subevent indication.
 	 *
+	 * A response may be fragmented across several controller reports. When
+	 * @kconfig{CONFIG_BT_PER_ADV_RSP_REASSEMBLY} is enabled, the host
+	 * reassembles the fragments and delivers the complete response in a
+	 * single callback. If it is disabled, partial reports are discarded
+	 * and only reports already marked as "complete" by the controller are
+	 * forwarded to the application.
+	 *
 	 * @param adv  The advertising set object.
 	 * @param info Information about the responses received.
 	 * @param buf  The received data. NULL if the controller reported
@@ -337,6 +344,10 @@ int bt_enable(bt_ready_cb_t cb);
  *
  * Disable Bluetooth. Can't be called before bt_enable has completed.
  *
+ * When bt_enable() was called with a ready callback the initialization runs
+ * asynchronously. If bt_disable() is called before the ready callback fires,
+ * it returns -EAGAIN. The caller should retry after the ready callback.
+ *
  * This API will clear all configured identity addresses and keys that are not persistently
  * stored with @kconfig{CONFIG_BT_SETTINGS}. These can be restored
  * with @ref settings_load before reenabling the stack.
@@ -349,7 +360,10 @@ int bt_enable(bt_ready_cb_t cb);
  *
  * Close and release HCI resources. Result is architecture dependent.
  *
- * @return Zero on success or (negative) error code otherwise.
+ * @retval 0 Success.
+ * @retval -EAGAIN bt_enable() with a ready callback has not completed yet;
+ *                 retry after the ready callback fires.
+ * @retval -EALREADY bt_disable() has already been called.
  */
 int bt_disable(void);
 
@@ -1525,7 +1539,26 @@ struct bt_le_ext_adv_info {
 	/** Advertising Set ID */
 	uint8_t                    sid;
 
-	/** Current local advertising address used. */
+	/** @brief Current local advertising address used.
+	 *
+	 *  The address the set advertises with, whether that is an identity
+	 *  address, a static random address, an RPA or an NRPA. For a set
+	 *  advertising with an RPA this is the RPA itself, not the identity
+	 *  address it resolves to. The value is determined when the
+	 *  advertising parameters are set, so it is only meaningful once
+	 *  bt_le_ext_adv_create() or bt_le_ext_adv_update_param() has
+	 *  succeeded, and reads as @ref BT_ADDR_LE_ANY before that.
+	 *
+	 *  The pointer is valid for as long as the advertising set object
+	 *  itself, i.e. until bt_le_ext_adv_delete(), and tracks the set
+	 *  across reconfiguration and private address rotation. Copy the
+	 *  address if it is needed beyond that.
+	 *
+	 *  @note If the set was configured to let the controller resolve the
+	 *  address against its resolving list, the controller may substitute a
+	 *  locally generated RPA that the host cannot observe. The configured
+	 *  fallback address is reported in that case.
+	 */
 	const bt_addr_le_t         *addr;
 
 	/** Extended advertising state. */

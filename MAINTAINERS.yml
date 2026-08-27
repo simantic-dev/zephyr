@@ -1358,12 +1358,13 @@ Device Driver Model:
     - init
 
 Devicetree:
-  status: odd fixes
+  status: maintained
+  maintainers:
+    - maass-hamburg
   collaborators:
     - mbolivar
     - rruuaanng
     - kylebonnici
-    - maass-hamburg
   files-regex:
     - ^dts/bindings/.*zephyr.*
     - ^dts/bindings/[^,]+$
@@ -3488,6 +3489,7 @@ Infineon Platforms:
     - MerinMGeorge
     - ifx-rmcs
     - parthitce
+    - stites-infineon
   files:
     - boards/cypress/
     - boards/infineon/
@@ -3844,7 +3846,6 @@ LiteX Platforms:
     - maass-hamburg
   collaborators:
     - kgugala
-    - mateusz-holenko
   files:
     - boards/enjoydigital/litex_vexriscv/
     - drivers/*/*litex*
@@ -6218,6 +6219,21 @@ TI Stellaris Platforms:
   labels:
     - "platform: TI Stellaris"
 
+TI Tiva C Platforms:
+  status: maintained
+  maintainers:
+    - srisurya1
+  files:
+    - soc/ti/tiva_c/
+    - boards/ti/tm4c123gxl/
+    - dts/arm/ti/tm4c*
+    - dts/bindings/*/*tiva-c*
+    - drivers/*/*tiva_c*
+    - include/zephyr/dt-bindings/pinctrl/tiva-c*
+    - modules/Kconfig.tiva_c
+  labels:
+    - "platform: TI Tiva C"
+
 Task Watchdog:
   status: maintained
   maintainers:
@@ -6283,7 +6299,7 @@ Testing with Renode:
   # This area is to be converted to a subarea
   status: odd fixes
   collaborators:
-    - mateusz-holenko
+    - PiotrZierhoffer
     - fkokosinski
   files:
     - cmake/emu/renode.cmake
@@ -6959,6 +6975,7 @@ West:
     - lauracarlesso
     - MerinMGeorge
     - ifx-rmcs
+    - stites-infineon
   files:
     - modules/Kconfig.infineon
     - modules/hal_infineon/
@@ -7739,7 +7756,6 @@ hawkBit:
   files:
     - subsys/mgmt/hawkbit/
     - include/zephyr/mgmt/hawkbit/
-    - include/zephyr/mgmt/hawkbit.h
     - samples/subsys/mgmt/hawkbit/
   labels:
     - "area: hawkBit"
