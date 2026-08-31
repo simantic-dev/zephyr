@@ -33,7 +33,7 @@ MODEM_CHAT_SCRIPT_CMDS_DEFINE(
 	MODEM_CHAT_SCRIPT_CMD_RESP_NONE("AT+CMUX=0,0,5,127", 1000));
 
 MODEM_CHAT_SCRIPT_DEFINE(telit_lex10q1_init_chat_script, telit_lex10q1_init_chat_script_cmds,
-			 abort_matches, modem_cellular_chat_callback_handler, 10);
+			 abort_matches, modem_cellular_chat_callback_handler, 30);
 
 MODEM_CHAT_SCRIPT_CMDS_DEFINE(telit_lex10q1_dial_chat_script_cmds,
 			      MODEM_CHAT_SCRIPT_CMD_RESP("AT", ok_match),
