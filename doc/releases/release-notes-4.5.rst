@@ -158,6 +158,8 @@ Removed APIs and options
     * The CMake ``flash``, ``debug``, ``debugserver``, ``attach`` and ``rtt`` targets,
       replaced by the corresponding ``west`` commands
     * The ``WEST_DIR`` build system variable
+    * The ``ZephyrUnittest`` CMake package, replaced by
+      ``find_package(Zephyr COMPONENTS unittest)``
 
 * CAN
 
@@ -178,6 +180,10 @@ Removed APIs and options
 * hawkBit
 
     * ``<zephyr/mgmt/hawkbit.h>``
+
+* Devicetree
+
+    * ``zephyr,memory-region-mpu``
 
 * LLEXT
 
@@ -242,6 +248,11 @@ Removed APIs and options
 * Stream Flash
 
     * ``stream_flash_erase_page()``
+
+* ZTest
+
+    * ``CONFIG_ZTEST_SHUFFLE_SUITE_REPEAT_COUNT``
+    * ``CONFIG_ZTEST_SHUFFLE_TEST_REPEAT_COUNT``
 
 * West sign support for imgtool, which was deprecated in Zephyr 4.0, has been removed.
 
@@ -316,6 +327,19 @@ Deprecated APIs and options
 
   * Deprecated :kconfig:option:`CONFIG_NET_L2_PTP`.
     Used :kconfig:option:`CONFIG_NET_L2_PTP_TIMESTAMPING` instead.
+
+* SPI
+
+  * The SPI API now uses inclusive terminology (controller/peripheral, SDO/SDI). The former
+    names are deprecated: ``SPI_OP_MODE_MASTER``/``SPI_OP_MODE_SLAVE`` (use
+    :c:macro:`SPI_OP_MODE_CONTROLLER`/:c:macro:`SPI_OP_MODE_PERIPHERAL`), the ``slave`` member
+    of :c:struct:`spi_config` (use ``peripheral``), the ``SPI_MOSI_OVERRUN_*`` macros (use
+    :c:macro:`SPI_SDO_OVERRUN_UNKNOWN`, :c:macro:`SPI_SDO_OVERRUN_DT`,
+    :c:macro:`SPI_SDO_OVERRUN_DT_INST`), ``CONFIG_SPI_SLAVE`` (use
+    :kconfig:option:`CONFIG_SPI_PERIPHERAL`), the ``zephyr,bt-hci-spi-slave`` devicetree
+    compatible (use :dtcompatible:`zephyr,bt-hci-spi-peripheral`) and the
+    ``mosi-gpios``/``miso-gpios``-style devicetree properties of the bindings listed in the
+    migration guide.
 
 * Timer
 
@@ -465,6 +489,8 @@ New APIs and options
 
   * :c:func:`lora_recv_duty_cycle`
   * :c:func:`lora_recv_duty_cycle_async`
+  * :c:func:`lora_energy_detect`
+  * :c:func:`lora_rssi`
 
 * Management
 
