@@ -57,6 +57,10 @@ Build System
   now fails on one. Expand the pattern with ``file(GLOB ...)`` and pass the
   resulting file names instead.
 
+* The ``ZephyrUnittest`` CMake package, deprecated since Zephyr 3.1, has been removed and
+  ``west zephyr-export`` no longer registers it. Use
+  ``find_package(Zephyr COMPONENTS unittest)`` instead of ``find_package(ZephyrUnittest)``.
+
 * ``west spdx --init`` is deprecated and will be removed in Zephyr 5.0. A build with
   :kconfig:option:`CONFIG_BUILD_OUTPUT_META` now asks CMake for the file-based API object model
   that ``west spdx`` reads, so generating an SBOM no longer needs the build directory to be
@@ -359,6 +363,18 @@ Devicetree
   unsigned comparisons or ``BUILD_ASSERT(DT_PROP(node, foo) > 0, ...)`` checks, must be updated
   to use signed types or signed-aware checks (:github:`107271`).
 
+* The ``zephyr,memory-region-mpu`` property has been removed. Use ``zephyr,memory-attr``
+  instead. It takes an integer bitmask, not a string:
+
+  .. code-block:: none
+
+     "RAM"         -> <DT_MEM_ARM_MPU_RAM>
+     "RAM_NOCACHE" -> <DT_MEM_ARM_MPU_RAM_NOCACHE>
+     "FLASH"       -> <DT_MEM_ARM_MPU_FLASH>
+     "PPB"         -> <DT_MEM_ARM_MPU_PPB>
+     "IO"          -> <DT_MEM_ARM_MPU_IO>
+     "EXTMEM"      -> <DT_MEM_ARM_MPU_EXTMEM>
+
 Digital Microphone
 ==================
 
@@ -482,6 +498,21 @@ Ethernet
   :dtcompatible:`zephyr,native-ptp-clock` has been added for the native_sim PTP clock driver.
   :kconfig:option:`CONFIG_PTP_CLOCK_NATIVE` is enabled by default when the
   :dtcompatible:`zephyr,native-ptp-clock` compatible is present.
+
+* The native_sim TAP ethernet driver is now instantiated from devicetree using the
+  :dtcompatible:`zephyr,native-tap` compatible. Each interface is defined by a devicetree
+  node instead of the ``CONFIG_ETH_NATIVE_TAP_INTERFACE_COUNT`` Kconfig option, which has been
+  removed. Multiple interfaces are created by adding multiple nodes. The following Kconfig
+  options have been removed and replaced by devicetree properties:
+
+  * ``CONFIG_ETH_NATIVE_TAP_DRV_NAME`` -> the ``host-interface`` property.
+  * ``CONFIG_ETH_NATIVE_TAP_MAC_ADDR`` -> the ``local-mac-address`` property.
+  * ``CONFIG_ETH_NATIVE_TAP_RANDOM_MAC`` -> the ``zephyr,random-mac-address`` property.
+
+  The ``--eth-if``, ``--mac-addr``, ``--ipv4-addr``, ``--ipv4-gw`` and ``--ipv4-nm`` command
+  line options are still supported and apply to the first interface. Per-interface variants
+  named ``<node>_eth-if``, ``<node>_mac-addr``, etc. have been added for the remaining
+  interfaces.
 
 * ``port_phylink_change`` of the :c:struct:`dsa_api` is now optional.
   The DSA driver no longer needs to call :c:func:`net_eth_carrier_on` or
@@ -1010,6 +1041,27 @@ Serial
 
 SPI
 ===
+
+* The SPI API has been migrated to the inclusive terminology selected by
+  :ref:`coding_guideline_inclusive_language` (controller/peripheral roles, SDO/SDI signal names).
+  The former names are deprecated and will be removed in Zephyr v5.0:
+
+  * :c:macro:`SPI_OP_MODE_CONTROLLER` and :c:macro:`SPI_OP_MODE_PERIPHERAL` replace
+    ``SPI_OP_MODE_MASTER`` and ``SPI_OP_MODE_SLAVE``.
+  * The ``slave`` member of :c:struct:`spi_config` is renamed to ``peripheral``.
+  * :c:macro:`SPI_SDO_OVERRUN_UNKNOWN`, :c:macro:`SPI_SDO_OVERRUN_DT` and
+    :c:macro:`SPI_SDO_OVERRUN_DT_INST` replace the ``SPI_MOSI_OVERRUN_*`` macros.
+  * :kconfig:option:`CONFIG_SPI_PERIPHERAL` replaces ``CONFIG_SPI_SLAVE``.
+  * ``spi_context_is_peripheral()`` replaces ``spi_context_is_slave()`` in the driver-facing
+    ``spi_context.h`` helpers.
+  * The ``sdo-gpios``/``sdi-gpios`` properties of :dtcompatible:`zephyr,spi-bitbang` and
+    :dtcompatible:`raspberrypi,pico-spi-pio`, the ``spi-sdi-gpios``/``spi-sdo-gpios`` properties of
+    :dtcompatible:`brcm,afbr-s50`, the ``peripheral`` property of :dtcompatible:`nxp,s32-spi` and
+    the ``is-peripheral`` property of :dtcompatible:`realtek,bee-spi` replace their former
+    ``mosi``/``miso``/``slave``-based names, which are still accepted but marked as deprecated in
+    the bindings.
+  * The :dtcompatible:`zephyr,bt-hci-spi-peripheral` devicetree compatible replaces
+    ``zephyr,bt-hci-spi-slave``.
 
 * ``SPI_SILABS_SIWX91X_GSPI_DMA`` and ``SPI_SILABS_SIWX91X_GSPI_DMA_MAX_BLOCKS`` have been removed.
   They are replaced by ``SPI_SILABS_SIWX91X_GSPI_DMA_DESCR_COUNT`` which allow to enable DMA and
@@ -1743,6 +1795,13 @@ Other subsystems
      ZTEST_BENCHMARK(suite, my_bench, 100, setup, teardown) { /* ... */ }
      ZTEST_BENCHMARK_TIMED(suite, my_bench, 1000, setup, teardown) { /* ... */ }
 
+* The ``CONFIG_ZTEST_SHUFFLE_SUITE_REPEAT_COUNT`` and ``CONFIG_ZTEST_SHUFFLE_TEST_REPEAT_COUNT``
+  Kconfig options, deprecated since Zephyr 4.0, have been removed. With
+  :kconfig:option:`CONFIG_ZTEST_SHUFFLE` alone, suites and tests now run once per execution, in a
+  shuffled order; to repeat them, enable :kconfig:option:`CONFIG_ZTEST_REPEAT` and set
+  :kconfig:option:`CONFIG_ZTEST_SUITE_REPEAT_COUNT` and
+  :kconfig:option:`CONFIG_ZTEST_TEST_REPEAT_COUNT`.
+
 * The CPU load metric module has been merged into the unified :ref:`cpu_load` module. The
   :kconfig:option:`CONFIG_CPU_LOAD_METRIC` option is deprecated; enable
   :kconfig:option:`CONFIG_CPU_LOAD` with the :kconfig:option:`CONFIG_CPU_LOAD_BACKEND_RUNTIME_STATS`
@@ -1969,3 +2028,10 @@ Video
   ``uint16_t *idx`` output parameter but instead returns a pointer to the imported
   :c:struct:`video_buffer`, or ``NULL`` on failure. This helps to make the index transparent
   to the application and also makes the buffer accessible from the application.
+
+Twister
+=======
+
+* Faults after tests have passed are now explicitly detected and fail the whole
+  testsuite, if a test produces a fault on purpose then the corresponding test
+  case has to be marked with ``ignore_faults: true`` (:github:`116359`).
