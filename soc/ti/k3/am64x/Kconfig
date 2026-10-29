@@ -2,6 +2,12 @@
 # Copyright (c) 2026 Siemens Mobility GmbH
 # SPDX-License-Identifier: Apache-2.0
 
+config SOC_SERIES_AM64X_A53
+	select ARM64
+	select CPU_CORTEX_A53
+	select ARM_ARCH_TIMER if SYS_CLOCK_EXISTS
+	select SOC_EARLY_INIT_HOOK
+
 config SOC_SERIES_AM64X_M4
 	select ARM
 	select CPU_CORTEX_M4

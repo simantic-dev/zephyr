@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2026 Texas Instruments Incorporated
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* Offsets are from main_pinctrl (0xf4000): PADCONFIG140/141 at 0xf4230/0xf4234 (TRM pad table) */
+&main_pinctrl {
+	main_uart0_rx_default: main_uart0_rx_default {
+		pinmux = <K3_PINMUX(0x230, PIN_INPUT, MUX_MODE_0)>; /* UART0_RXD */
+	};
+
+	main_uart0_tx_default: main_uart0_tx_default {
+		pinmux = <K3_PINMUX(0x234, PIN_OUTPUT, MUX_MODE_0)>; /* UART0_TXD */
+	};
+};

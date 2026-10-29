@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2026 Texas Instruments Incorporated
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <ti/ti_am6442_a53.dtsi>
+#include "sk_am64_am6442_a53-pinctrl.dtsi"
+
+/ {
+	model = "TI AM64X STARTER KIT (SK) A53";
+	compatible = "ti,am64x_a53_sk", "ti,am6442";
+
+	chosen {
+		zephyr,console = &main_uart0;
+		zephyr,shell-uart = &main_uart0;
+		zephyr,sram = &a53_ddr_section;
+	};
+
+	cpus {
+		cpu@0 {
+			status = "okay";
+		};
+
+		cpu@1 {
+			status = "okay";
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+
+		/* Reserved memory for TF-A/OP-TEE (same convention as sk_am62) */
+		tfa_memory: memory@80000000 {
+			reg = <0x80000000 DT_SIZE_M(32)>;
+		};
+	};
+
+	/* DDR window is 2GB at 0x80000000 (TRM Table 2-1) */
+	ddr0: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 DT_SIZE_G(2)>;
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+
+		a53_ddr_section: memory@82000000 {
+			reg = <0x82000000 (DT_SIZE_G(2) - DT_SIZE_M(32))>;
+		};
+	};
+};
+
+&main_uart0 {
+	current-speed = <115200>;
+	pinctrl-0 = <&main_uart0_rx_default &main_uart0_tx_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};

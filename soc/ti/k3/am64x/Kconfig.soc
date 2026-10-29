@@ -6,6 +6,12 @@ config SOC_SERIES_AM64X
 	bool
 	select SOC_FAMILY_TI_K3
 
+config SOC_SERIES_AM64X_A53
+	bool
+	select SOC_SERIES_AM64X
+	help
+	  Enable support for AM64X A53 Series.
+
 config SOC_SERIES_AM64X_M4
 	bool
 	select SOC_SERIES_AM64X
@@ -17,6 +23,10 @@ config SOC_SERIES_AM64X_R5
 	select SOC_SERIES_AM64X
 	help
 	  Enable support for AM64X R5 Series.
+
+config SOC_AM6442_A53
+	bool
+	select SOC_SERIES_AM64X_A53
 
 config SOC_AM6442_M4
 	bool

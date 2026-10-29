@@ -1,0 +1,13 @@
+identifier: sk_am64/am6442/a53
+name: TI AM64X A53 Starter Kit (SK)
+type: mcu
+arch: arm64
+toolchain:
+  - zephyr
+  - cross-compile
+ram: 1024
+testing:
+  ignore_tags:
+    - net
+    - bluetooth
+vendor: ti
