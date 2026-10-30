@@ -52,6 +52,11 @@
 	};
 };
 
+/* CTRL_MMR0 is 128 KiB; the 32 KiB node size left the 0x9008 unlock offset unmapped */
+&main_mmr_cfg0 {
+	reg = <0x43000000 DT_SIZE_K(128)>;
+};
+
 &main_uart0 {
 	current-speed = <115200>;
 	pinctrl-0 = <&main_uart0_rx_default &main_uart0_tx_default>;
