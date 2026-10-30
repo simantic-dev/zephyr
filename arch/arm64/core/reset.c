@@ -36,7 +36,8 @@ void __weak z_arm64_el1_plat_init(void)
 
 void z_arm64_el_highest_init(void)
 {
-	if (is_el_highest_implemented()) {
+	/* with a runtime-read frequency CNTFRQ belongs to firmware/hypervisor (EL1 write UNDEFs under hvf) */
+	if (!IS_ENABLED(CONFIG_TIMER_READS_ITS_FREQUENCY_AT_RUNTIME) && is_el_highest_implemented()) {
 		write_cntfrq_el0(CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC);
 	}
 
